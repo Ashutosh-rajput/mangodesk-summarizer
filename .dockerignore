@@ -1,0 +1,25 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+env/
+
+# Secrets - VERY IMPORTANT
+.env
+
+# Docker
+Dockerfile
+.dockerignore
+
+# IDE / OS specific
+.idea/
+.vscode/
+*.swp
+*.swo
