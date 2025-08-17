@@ -1,6 +1,6 @@
 import os
 
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, HTTPException, Form
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr
 from fastapi.responses import PlainTextResponse, HTMLResponse, FileResponse
@@ -30,12 +30,14 @@ class EmailRequest(BaseModel):
     email: EmailStr
 
 
-
 @app.post("/summary", summary="Generate summary from uploaded file")
-async def generate_summary_from_file(file: UploadFile = File(...)):
+async def generate_summary_from_file(
+        file: UploadFile = File(...),
+        custom_prompt: str = Form(None)
+):
     """
-    Accepts a file (txt, pdf, docx), extracts its content, generates a summary,
-    and saves it to `doc/summary.txt`.
+    Accepts a file (txt, pdf, docx) and an optional custom prompt.
+    It extracts the content, generates a summary, and saves it.
     """
     allowed = {"text/plain", "application/pdf",
                "application/vnd.openxmlformats-officedocument.wordprocessingml.document"}
@@ -47,15 +49,16 @@ async def generate_summary_from_file(file: UploadFile = File(...)):
     delete_directory()
 
     # Save uploaded file and get its content
-    content = save_raw(file)
+    content = await save_raw(file)
 
-    # *** LOGIC FIX: Call the async summarizer, not the file saver ***
-    summary = await get_summary(content)
+    # *** LOGIC UPDATE: Pass the custom_prompt to your get_summary function ***
+    summary = await get_summary(content, custom_prompt=custom_prompt)
 
     # Save the generated summary to disk
     save_summary(summary)
 
     return {"message": "Summary generated successfully", "summary": summary}
+
 
 
 @app.post("/edit-summary", summary="Edit the existing summary with a prompt")
