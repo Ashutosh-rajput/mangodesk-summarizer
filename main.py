@@ -49,7 +49,7 @@ async def generate_summary_from_file(
     delete_directory()
 
     # Save uploaded file and get its content
-    content = await save_raw(file)
+    content =  save_raw(file)
 
     # *** LOGIC UPDATE: Pass the custom_prompt to your get_summary function ***
     summary = await get_summary(content, custom_prompt=custom_prompt)
